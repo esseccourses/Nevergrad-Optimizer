@@ -1,3 +1,13 @@
+## How to run
+
+This project is designed to be run on **Google Colab**.
+
+1. Open the notebook `optimizer.ipynb` in Google Colab
+2. Run all cells from top to bottom
+3. No local installation is required
+
+All dependencies are installed inside the notebook.
+
 # Nevergrad-Optimizer
 optimizing the Nevergrad Algorithm by introducing a sigma-aware TBPSA algorithm
 The user has this problem : they have a noisy objective function.
