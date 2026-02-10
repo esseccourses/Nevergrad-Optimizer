@@ -8,49 +8,42 @@ This project is designed to be run on **Google Colab**.
 
 All dependencies are installed inside the notebook.
 
-# Nevergrad-Optimizer
-optimizing the Nevergrad Algorithm by introducing a sigma-aware TBPSA algorithm
-The user has this problem : they have a noisy objective function.
-When they evaluate the function at some point 
-x, they don't get a single value y, but y ± σ (the noise level).
+# Sigma-Aware TBPSA for Noisy Optimization
 
-So for every observation, the user knows how much noise there is in the measurement.
+Project description
 
-Another important point is that σ is not constant across the search space.
+This repository explores how to improve optimization with TBPSA in the presence of heteroskedastic noise.
 
-In this problem, the user uses TBPSA.
-TBPSA stands for Test-Based Population Size Adaptation.
-It is an optimizer in Nevergrad.
+In this setting, evaluating the objective function at a point 𝑥 does not return a single value 𝑦 but: 𝑦 ± 𝜎, where:
+y is the observed value
+σ is a known estimate of the noise level
+σ is not constant across the search space
 
-It is an optimization method that works well for continuous and noisy cases.
-It adjusts the population size based on statistical tests and recent performance of the evaluations.
+This means that some evaluations are much more reliable than others.
 
-How TBPSA Works
-Start with a population (set of candidates around the current best point)
-Evaluate each candidate : compute the noisy function
-Compare candidates using statistical tests
-Update the current best point with the best candidate
-Adapt population size :
-if the improvement is uncertain or noisy : TBPSA increases the population size to gather more evidence
-if the improvement is clear and strong : TBPSA reduces the population size to save evaluations
-repeat
-TBPSA documentation:
-https://www.lamsade.dauphine.fr/~cazenave/papers/games_cec.pdf
+# What is TBPSA?
 
-Why Sigma Matters
-So, using TBPSA, we must use 
-σ
- (the noise information we have about each observation 
-y
-)
-to determine whether or not we should choose this point when searching for the minimum of a function.
+TBPSA (Two-Points Bandit Stochastic Approximation) is a derivative-free optimizer implemented in Nevergrad.
+It is designed for noisy optimization and estimates descent directions using comparisons between nearby points.
 
-This will help with stability and efficiency when minimum-searching.
+However, the standard TBPSA implementation does not use the information about the noise level sigma.
+# Main contribution
 
-The user suggests an idea :
+The goal of this project is to make TBPSA sigma-aware.
 
-"A naive approach I could see is to [...] 'tell' the same datapoint multiple times if the associated error is small"
-→ evaluate the same point multiple times if σ is small.
+Since each evaluation comes with an estimate of its uncertainty, we exploit this information to make the optimizer more stable and efficient.
 
-Takeaways of This Repo
-how to use known noise values for better optimization using TBPSA when noise is not the same across the search space how to optimize a noisy function
+Inspired by the idea:
+
+repeat ("tell") the same datapoint multiple times when its uncertainty is low
+
+we introduce a simple mechanism where observations with lower noise are given more influence in the optimization process.
+
+This approximates an inverse-variance weighting strategy, allowing the optimizer to trust reliable measurements more than highly noisy ones.
+# Why this matters
+
+When noise varies across the search space:
+
+Some function evaluations are highly reliable, others are extremely uncertain
+
+Using σ helps improve stability, reduce sensitivity to noisy outliers obtain a more realistic estimate of the minimum
